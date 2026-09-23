@@ -1,171 +1,191 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+// components/sections/HeroSection.jsx
 import Link from 'next/link';
-import Image from 'next/image';
-import { FaSearch, FaArrowRight, FaCar, FaShieldAlt, FaStar } from 'react-icons/fa';
 
 /**
- * Hero Section - Main landing area with animated gradient background,
- * search functionality, and key statistics
+ * ─────────────────────────────────────────────────────────────
+ * HERO SECTION — OB MOTORS
+ * ─────────────────────────────────────────────────────────────
+ * Self-contained. Zero config edits. Zero client JS.
+ *
+ * RESPONSIVE HEIGHT:
+ *   Mobile    33.33vh   (min 280, max 460)
+ *   md:       55vh      (min 420, max 620)
+ *   lg:       65vh      (min 500, max 720)
+ *   xl:       70vh      (min 540, max 780)
+ *
+ * ANIMATION TIMELINE (cinematic reveal):
+ *   0ms     video fade-in begins
+ *   400ms   text fade-up begins
+ *   1200ms  video fully visible
+ *   1600ms  text fully visible
+ *
+ * DESIGN TOKENS (inlined):
+ *   bg      #0A0A0B     accent   #E11D2E
+ *   line    #26262A     accent-h #C4172A
+ *   radius  2px         text     #FFFFFF
+ * ─────────────────────────────────────────────────────────────
  */
+
+// Keyframes + reduced-motion + video fade-in.
+// Kept inline so this file remains fully self-contained.
+const heroStyles = `
+  @keyframes obVideoIn {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes obTextIn {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .ob-hero-video {
+    animation: obVideoIn 1200ms cubic-bezier(.4,0,.2,1) forwards;
+  }
+  .ob-hero-content {
+    opacity: 0;
+    animation: obTextIn 1000ms cubic-bezier(.2,.7,.2,1) 400ms forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ob-hero-video { display: none; }
+    .ob-hero-content { opacity: 1; animation: none; }
+  }
+`;
+
 export default function HeroSection() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  const stats = [
-    { label: 'Cars Available', value: '1,200+', icon: FaCar },
-    { label: 'Happy Customers', value: '8,500+', icon: FaStar },
-    { label: 'Verified Dealers', value: '350+', icon: FaShieldAlt },
-  ];
-
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-3xl" />
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
+    <>
+      <style>{heroStyles}</style>
+
+      <section
+        aria-label="OB Motors introduction"
+        className="
+          relative isolate w-full overflow-hidden
+          bg-[#0A0A0B]
+
+          /* ── Mobile: 1/3 screen ── */
+          h-[33.33vh] min-h-[280px] max-h-[460px]
+
+          /* ── Tablet ── */
+          md:h-[55vh] md:min-h-[420px] md:max-h-[620px]
+
+          /* ── Laptop ── */
+          lg:h-[65vh] lg:min-h-[500px] lg:max-h-[720px]
+
+          /* ── Large desktop ── */
+          xl:h-[70vh] xl:min-h-[540px] xl:max-h-[780px]
+        "
+      >
+        {/* ── LAYER 1: Background video (smooth fade-in) ──────── */}
+        <video
+          className="
+            ob-hero-video
+            absolute inset-0 h-full w-full object-cover
+          "
+          src="/assets/bg_video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/assets/hero-poster.jpg"
+          aria-hidden="true"
         />
-      </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Text Content */}
-          <div
-            className={`transition-all duration-1000 ${
-              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-            }`}
-          >
-            {/* Badge */}
-            <div className="inline-flex items-center px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-300 text-sm mb-6 backdrop-blur-sm">
-              <FaStar className="w-3 h-3 mr-2 text-yellow-400" />
-              #1 Premium Car Marketplace
-            </div>
+        {/* ── LAYER 2: Dark scrim (video কে text এর জন্য dim করে) ── */}
+        <div
+          aria-hidden="true"
+          className="
+            absolute inset-0
+            bg-gradient-to-b
+            from-black/60 via-black/50 to-black/75
+          "
+        />
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Find Your Perfect{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Dream Car
-              </span>
-            </h1>
+        {/* ── LAYER 3: Content — সব CENTER ──────────────────── */}
+        <div className="relative z-10 flex h-full items-center">
+          <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12">
+            <div className="ob-hero-content flex flex-col items-center text-center">
 
-            <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-xl leading-relaxed">
-              Browse premium vehicles, compare prices, and drive home your dream car with flexible financing options.
-            </p>
-
-            {/* Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-10">
-              <div className="flex-1 relative">
-                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by make, model, or keyword..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all duration-300"
-                />
-              </div>
-              <Link
-                href={searchTerm ? `/buy?search=${encodeURIComponent(searchTerm)}` : '/buy'}
-                className="flex items-center justify-center space-x-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-2xl font-semibold transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98]"
+              {/* Tagline */}
+              <p
+                className="
+                  mb-2 sm:mb-3 lg:mb-4
+                  text-[0.7rem] sm:text-[0.75rem] lg:text-[0.8rem]
+                  font-medium uppercase
+                  tracking-[0.35em] sm:tracking-[0.4em]
+                  text-white/75
+                "
               >
-                <span>Search</span>
-                <FaArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+                Premium Car Distributor &amp; Importer
+              </p>
 
-            {/* Quick Links */}
-            <div className="flex flex-wrap gap-3 mb-10">
-              {['Mercedes', 'BMW', 'Tesla', 'Porsche', 'Audi'].map((make) => (
+              {/* Brand wordmark */}
+              <h1
+                className="
+                  font-extrabold leading-[0.95] tracking-[-0.04em]
+                  text-white
+                  text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6rem]
+                "
+              >
+                OB&nbsp;MOTORS
+              </h1>
+
+              {/* Accent hairline — centered */}
+              <span
+                aria-hidden="true"
+                className="
+                  mt-3 sm:mt-4 lg:mt-5
+                  block h-px w-16 sm:w-20
+                  bg-[#E11D2E]
+                "
+              />
+
+              {/* CTAs — centered */}
+              <div className="mt-4 sm:mt-6 lg:mt-7 flex flex-wrap justify-center gap-3">
                 <Link
-                  key={make}
-                  href={`/buy?make=${make}`}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-gray-300 text-sm hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                  href="/inventory"
+                  className="
+                    inline-flex h-10 items-center justify-center
+                    rounded-[2px]
+                    bg-[#E11D2E] px-5
+                    text-[0.875rem] font-semibold tracking-[0.02em] text-white
+                    transition-colors duration-200
+                    hover:bg-[#C4172A]
+                    focus-visible:outline-none
+                    focus-visible:ring-2 focus-visible:ring-white/70
+                  "
                 >
-                  {make}
+                  Browse Inventory
                 </Link>
-              ))}
-            </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6">
-              {stats.map((stat) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={stat.label} className="text-center sm:text-left">
-                    <div className="flex items-center justify-center sm:justify-start space-x-2 mb-1">
-                      <Icon className="w-4 h-4 text-blue-400" />
-                      <span className="text-2xl font-bold text-white">{stat.value}</span>
-                    </div>
-                    <p className="text-sm text-gray-400">{stat.label}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right Column - Car Image / Visual */}
-          <div
-            className={`hidden lg:block transition-all duration-1000 delay-300 ${
-              isVisible ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
-            }`}
-          >
-            <div className="relative">
-              {/* Decorative glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-3xl scale-110" />
-
-              {/* Car showcase card */}
-              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                <div className="relative h-80 w-full rounded-2xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 mb-6">
-                  <Image
-                    src="https://i.ibb.co.com/ycpGzNS2/e6d455913972f456466501091edd9501.png"
-                    alt="Featured Premium Car"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                  <span className="absolute top-4 left-4 px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
-                    Featured
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  2024 Mercedes-Benz EQS 580
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                    $125,000
-                  </span>
-                  <Link
-                    href="/buy"
-                    className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300"
-                  >
-                    <span>View All</span>
-                    <FaArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+                <Link
+                  href="/contact"
+                  className="
+                    inline-flex h-10 items-center justify-center
+                    rounded-[2px]
+                    border border-white/30 px-5
+                    text-[0.875rem] font-semibold tracking-[0.02em] text-white
+                    transition-colors duration-200
+                    hover:border-white/60 hover:bg-white/5
+                    focus-visible:outline-none
+                    focus-visible:ring-2 focus-visible:ring-white/70
+                  "
+                >
+                  Contact Sales
+                </Link>
               </div>
+
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-surface to-transparent" />
-    </section>
+        {/* ── Bottom hairline ───────────────────────────────── */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-px bg-[#26262A]/60"
+        />
+      </section>
+    </>
   );
 }

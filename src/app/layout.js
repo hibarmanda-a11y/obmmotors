@@ -1,57 +1,51 @@
 import '@/app/globals.css';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
+import { headers } from 'next/headers';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import CompareBar from '@/components/ui/CompareBar';
-import { Providers } from './(Providers)/providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'CarVault - Premium Car Selling Platform',
-  description: 'Find your dream car with the best deals and financing options',
+  title: 'OB Motors — Premium Car Dealer',
+  description: 'Find your dream car at OB Motors',
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || '';
+
+  // ✅ Hide Navbar + Footer on admin/auth pages
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isAuthRoute = pathname.startsWith('/admin-login') || pathname.startsWith('/login') || pathname.startsWith('/signup');
+  const hideChrome = isAdminRoute || isAuthRoute;
+
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-surface text-gray-900 antialiased`}>
-        <Providers>
+      <body className={`${inter.className} bg-black text-white antialiased`}>
+        {hideChrome ? (
+          <>
+            {children}
+            <Toaster position="top-right" />
+          </>
+        ) : (
           <div className="min-h-screen flex flex-col">
             <Navbar />
-            <div className='mt-20'></div>
-            <main className="flex-grow">
-              {children}
-            </main>
+            <div className="mt-20" />
+            <main className="flex-grow">{children}</main>
             <Footer />
-            <CompareBar />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 5000,
+                style: { background: '#0E0E0F', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
+                success: { duration: 3000, iconTheme: { primary: '#C9A961', secondary: '#0E0E0F' } },
+                error: { duration: 4000, iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+              }}
+            />
           </div>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 5000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-              success: {
-                duration: 3000,
-                iconTheme: {
-                  primary: '#4ade80',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                duration: 4000,
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#fff',
-                },
-              },
-            }}
-          />
-        </Providers>
+        )}
       </body>
     </html>
   );

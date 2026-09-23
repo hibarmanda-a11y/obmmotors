@@ -1,11 +1,11 @@
-import HeroSection from '@/components/hero/HeroSection';
-import BrowseByCategory from '@/components/home/BrowseByCategory';
-import BestDeals from '@/components/home/BestDeals';
-import TrustSection from '@/components/home/TrustSection';
-import CustomerReviews from '@/components/home/CustomerReviews';
-import FinancingBanner from '@/components/home/FinancingBanner';
-import LatestBlog from '@/components/home/LatestBlog';
-import RecentlyViewed from '@/components/home/RecentlyViewed';
+import HeroSection from "@/components/hero/HeroSection";
+
+
+import CarInventory from "../components/home/CarInventory";
+import WhatYouLookingFor from "@/components/home/WhatYouLookingFor";
+import HappyCustomers from "@/components/home/HappyCustomers";
+import BookAppointmentSection from "@/components/home/BookAppointmentSection";
+import WhyWe from "@/components/home/WhyWe";
 
 /**
  * Landing page - Main entry point of the application
@@ -17,26 +17,21 @@ export default function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Browse By Category Section */}
-      <BrowseByCategory />
+      {/* Car Inventory */}
+      <CarInventory />
 
-      {/* Best Deals / Featured Cars */}
-      <BestDeals />
-      
-      {/* Financing Banner Call to Action */}
-      <FinancingBanner />
-
-      {/* Premium Trust Section */}
-      <TrustSection />
-
-      {/* Customer Reviews Section */}
-      <CustomerReviews />
-      
+      {/* What You Are Looking For */}
+      <WhatYouLookingFor />
+      {/* <happy Custoomers */}
+      <HappyCustomers />
       {/* Latest Blog Section */}
-      <LatestBlog />
-      
+      {/* Book Appointment */}
+      <BookAppointmentSection />
+
+      {/* why we  */}
+      <WhyWe />
       {/* Recently Viewed Cars */}
-      <RecentlyViewed />
+     
     </div>
   );
 }
