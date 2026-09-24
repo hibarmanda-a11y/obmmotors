@@ -285,3 +285,208 @@ https://www.instagram.com/visualsbyopu/
     return { success: false, error: error.message };
   }
 }
+
+
+// send emil to seller when a user submits a sell form
+/**
+ * Send sell-deal confirmation email
+ */
+export async function sendSellConfirmation(deal) {
+  const {
+    name,
+    email,
+    phone,
+    carName,
+    model,
+    regYear,
+    mileage,
+    offeredPrice,
+    images = [],
+  } = deal;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sell Request Received</title>
+      </head>
+      <body style="margin:0;padding:0;background:#0A0A0B;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#ffffff;-webkit-font-smoothing:antialiased;">
+        
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0A0A0B;padding:48px 16px;">
+          <tr>
+            <td align="center">
+              
+              <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#0E0E0F;border:1px solid rgba(255,255,255,0.08);">
+                
+                <!-- TOP WHITE LINE -->
+                <tr>
+                  <td style="height:3px;background:#ffffff;line-height:3px;font-size:0;">&nbsp;</td>
+                </tr>
+
+                <!-- HEADER -->
+                <tr>
+                  <td style="padding:40px 48px 32px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <p style="margin:0;font-size:10px;letter-spacing:0.4em;color:#ffffff;text-transform:uppercase;font-weight:600;">
+                      OB MOTORS
+                    </p>
+                    <h1 style="margin:16px 0 0;font-size:30px;font-weight:300;color:#ffffff;letter-spacing:-0.01em;line-height:1.2;">
+                      We've received your request
+                    </h1>
+                    <p style="margin:14px 0 0;font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:0.15em;text-transform:uppercase;">
+                      Vehicle Appraisal — In Progress
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- BODY -->
+                <tr>
+                  <td style="padding:40px 48px;">
+
+                    <p style="margin:0 0 24px;font-size:15px;color:rgba(255,255,255,0.85);line-height:1.8;">
+                      Dear <strong style="color:#ffffff;font-weight:600;">${name}</strong>,
+                    </p>
+
+                    <p style="margin:0 0 32px;font-size:15px;color:rgba(255,255,255,0.7);line-height:1.8;">
+                      Thank you for choosing OB Motors to help sell your vehicle. Our team has received your submission and will contact you within 24 hours to schedule a professional inspection.
+                    </p>
+
+                    <!-- DETAILS BOX -->
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.15);margin-bottom:32px;">
+                      <tr>
+                        <td style="padding:28px;">
+                          
+                          <p style="margin:0 0 20px;font-size:10px;letter-spacing:0.4em;color:rgba(255,255,255,0.6);text-transform:uppercase;font-weight:600;">
+                            Your Submission
+                          </p>
+
+                          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            
+                            <tr>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;text-transform:uppercase;">
+                                Vehicle
+                              </td>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ffffff;text-align:right;font-weight:500;">
+                                ${carName} ${model ? `· ${model}` : ''}
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;text-transform:uppercase;">
+                                Reg. Year
+                              </td>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ffffff;text-align:right;">
+                                ${regYear}
+                              </td>
+                            </tr>
+
+                            ${mileage ? `
+                            <tr>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;text-transform:uppercase;">
+                                Mileage
+                              </td>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ffffff;text-align:right;">
+                                ${mileage}
+                              </td>
+                            </tr>
+                            ` : ''}
+
+                            ${offeredPrice ? `
+                            <tr>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;text-transform:uppercase;">
+                                Offered Price
+                              </td>
+                              <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px;color:#ffffff;text-align:right;font-weight:600;">
+                                $${Number(offeredPrice).toLocaleString()}
+                              </td>
+                            </tr>
+                            ` : ''}
+
+                            <tr>
+                              <td style="padding:10px 0;font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:0.05em;text-transform:uppercase;">
+                                Contact
+                              </td>
+                              <td style="padding:10px 0;font-size:14px;color:#ffffff;text-align:right;">
+                                ${phone}
+                              </td>
+                            </tr>
+
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- WHAT'S NEXT -->
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-left:2px solid rgba(255,255,255,0.3);margin-bottom:32px;">
+                      <tr>
+                        <td style="padding:4px 0 4px 20px;">
+                          <p style="margin:0 0 8px;font-size:10px;letter-spacing:0.3em;color:rgba(255,255,255,0.5);text-transform:uppercase;font-weight:600;">
+                            What Happens Next
+                          </p>
+                          <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;">
+                            1. Our team reviews your submission<br />
+                            2. We contact you within 24 hours<br />
+                            3. Professional inspection at your location<br />
+                            4. Final offer — you decide
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0 0 16px;font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;">
+                      Need to talk sooner? Call us at <a href="tel:+8801620885976" style="color:#ffffff;text-decoration:underline;">+880 1620-885976</a> or reply to this email.
+                    </p>
+                    <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;">
+                      We look forward to working with you.
+                    </p>
+
+                  </td>
+                </tr>
+
+                <!-- FOOTER -->
+                <tr>
+                  <td style="padding:32px 48px;background:#0A0A0B;border-top:1px solid rgba(255,255,255,0.08);">
+                    <p style="margin:0 0 4px;font-size:11px;color:#ffffff;letter-spacing:0.3em;text-transform:uppercase;font-weight:600;">
+                      OB Motors
+                    </p>
+                    <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;">
+                      KA-61/6A Pragati Sarani<br />
+                      Baridhara, Dhaka-1212<br />
+                      Bangladesh
+                    </p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:20px 48px;background:#0A0A0B;border-top:1px solid rgba(255,255,255,0.05);">
+                    <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.3);text-align:center;letter-spacing:0.05em;">
+                      © ${new Date().getFullYear()} OB Motors — All rights reserved
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </body>
+    </html>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"OB Motors" <${process.env.GMAIL_USER}>`,
+      to: email,
+      replyTo: process.env.GMAIL_USER,
+      subject: `✓ We've received your request — ${carName}`,
+      html,
+    });
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Sell email send failed:', error);
+    return { success: false, error: error.message };
+  }
+}

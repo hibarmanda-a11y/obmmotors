@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { headers } from 'next/headers';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +24,8 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${inter.className} bg-black text-white antialiased`}> 
+        <Providers >
         {hideChrome ? (
           <>
             {children}
@@ -32,7 +34,7 @@ export default async function RootLayout({ children }) {
         ) : (
           <div className="min-h-screen flex flex-col">
             <Navbar />
-            <div className="mt-20" />
+            <div />
             <main className="flex-grow">{children}</main>
             <Footer />
             <Toaster
@@ -46,6 +48,7 @@ export default async function RootLayout({ children }) {
             />
           </div>
         )}
+        </Providers>
       </body>
     </html>
   );

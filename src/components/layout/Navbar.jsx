@@ -7,26 +7,17 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Lock body scroll when menu open
   useEffect(() => {
     if (isMenuOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isMenuOpen]);
 
-  const handleNavigation = () => {
-    setIsMenuOpen(false);
-  };
+  const handleNavigation = () => setIsMenuOpen(false);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -37,19 +28,14 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${
-          isScrolled
-            ? 'bg-black/95 backdrop-blur-md border-white/10'
-            : 'bg-black border-transparent'
-        }`}
-      >
+      {/* Navbar — NO BACKGROUND, FIXED, ALWAYS ON TOP */}
+      <nav className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
         <div className="w-full px-6 md:px-10">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <Link
               href="/"
-              className="text-xl sm:text-2xl font-extralight tracking-[0.3em] text-white uppercase"
+              className="pointer-events-auto text-xl sm:text-2xl font-extralight tracking-[0.3em] text-white uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
             >
               OB MOTORS
             </Link>
@@ -57,7 +43,7 @@ export default function Navbar() {
             {/* 3-Bar Menu Button */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="p-2 text-white hover:opacity-70 transition-opacity"
+              className="pointer-events-auto p-2 text-white hover:opacity-70 transition-opacity drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
               aria-label="Open Menu"
             >
               <svg
@@ -67,7 +53,11 @@ export default function Navbar() {
                 strokeWidth={1.5}
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"
+                />
               </svg>
             </button>
           </div>
@@ -76,7 +66,7 @@ export default function Navbar() {
 
       {/* Full-screen Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[60] bg-black">
+        <div className="fixed inset-0 z-[200] bg-black">
           {/* Header */}
           <div className="w-full px-6 md:px-10 h-20 flex justify-between items-center border-b border-white/10">
             <Link
@@ -98,7 +88,11 @@ export default function Navbar() {
                 strokeWidth={1.5}
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -114,9 +108,7 @@ export default function Navbar() {
                     href={href}
                     onClick={handleNavigation}
                     className={`text-3xl sm:text-5xl md:text-6xl font-extralight tracking-tight transition-colors ${
-                      isActive
-                        ? 'text-white'
-                        : 'text-white/40 hover:text-white'
+                      isActive ? 'text-white' : 'text-white/40 hover:text-white'
                     }`}
                   >
                     {label}

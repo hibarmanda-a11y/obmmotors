@@ -7,105 +7,117 @@ import Image from 'next/image';
 export default function AdminCarsPage() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [action, setAction] = useState(null);
+  const [deleting, setDeleting] = useState(null);
 
-  const loadCars = useCallback(async () => {
-    const res = await fetch('/api/admin/cars?limit=100');
-    if (!res.ok) throw new Error('Failed to load cars');
-    return res.json();
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/cars?limit=100');
+      const data = await res.json();
+      setCars(data.cars || []);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   }, []);
 
-  useEffect(() => {
-    loadCars()
-      .then((data) => setCars(data.cars || []))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [loadCars]);
+  useEffect(() => { load(); }, [load]);
 
   const handleDelete = async (id, title) => {
     if (!confirm(`Delete "${title}"?`)) return;
-    setAction({ type: 'delete', id });
+    setDeleting(id);
     try {
       const res = await fetch(`/api/admin/cars/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
-      const data = await loadCars();
-      setCars(data.cars || []);
-    } catch (err) {
-      alert('Delete failed: ' + err.message);
-    } finally {
-      setAction(null);
-    }
+      await load();
+    } catch (err) { alert(err.message); }
+    finally { setDeleting(null); }
   };
 
   return (
-    <div className="p-10">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-10 lg:p-12">
+      <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-[10px] tracking-[0.4em] text-white/40 uppercase mb-2">
+          <p className="text-[10px] tracking-[0.4em] text-white/30 uppercase mb-3">
             Inventory
           </p>
-          <h1 className="text-2xl font-extralight">Cars</h1>
+          <h1 className="text-3xl font-light text-white">Cars</h1>
         </div>
         <Link
           href="/admin/cars/new"
-          className="px-6 py-3 bg-white text-black text-xs font-semibold uppercase tracking-[0.3em] hover:bg-white/90 transition-colors"
+          className="px-6 py-3 bg-white text-black text-xs font-medium uppercase tracking-[0.2em] rounded-md hover:bg-white/90 transition-colors"
         >
           + Add Car
         </Link>
       </div>
 
       {loading && (
-        <div className="border border-white/10 p-12 text-center">
-          <p className="text-xs text-white/40 tracking-[0.4em] uppercase animate-pulse">
-            [ .... please wait loading .... ]
+        <div className="border border-white/5 rounded-lg p-16 text-center">
+          <p className="text-xs text-white/30 tracking-[0.4em] uppercase animate-pulse">
+            Loading...
           </p>
         </div>
       )}
 
       {!loading && cars.length === 0 && (
-        <div className="border border-white/10 p-12 text-center">
-          <p className="text-sm text-white/60">No cars yet.</p>
+        <div className="border border-white/5 rounded-lg p-16 text-center">
+          <p className="text-sm text-white/50">No cars yet</p>
         </div>
       )}
 
       {!loading && cars.length > 0 && (
-        <div className="border border-white/10 divide-y divide-white/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {cars.map((car) => {
-            const isDeleting = action?.type === 'delete' && action.id === car._id;
+            const isDeleting = deleting === car._id;
             return (
-              <div key={car._id} className="flex items-center gap-4 p-4 hover:bg-white/[0.02] transition-colors">
-                <div className="relative w-24 h-16 shrink-0 bg-white/5 overflow-hidden">
+              <div
+                key={car._id}
+                className="bg-[#0E0E0F] border border-white/5 rounded-lg overflow-hidden hover:border-white/20 transition-colors group"
+              >
+                {/* Image */}
+                <div className="relative aspect-[4/3] bg-white/[0.02] overflow-hidden">
                   {car.thumbnail && (
-                    <Image src={car.thumbnail} alt={car.title} fill sizes="96px" className="object-cover" />
+                    <Image
+                      src={car.thumbnail}
+                      alt={car.title}
+                      fill
+                      sizes="25vw"
+                      className="object-cover"
+                    />
+                  )}
+                  {car.isFeatured && (
+                    <span className="absolute top-3 left-3 bg-white text-black text-[9px] font-medium uppercase tracking-widest px-2.5 py-1 rounded">
+                      Featured
+                    </span>
                   )}
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{car.title}</p>
-                  <p className="text-xs text-white/40 truncate mt-1">
-                    {car.specs?.brand} · {car.specs?.reg_year} · {car.slug}
+                {/* Info */}
+                <div className="p-5">
+                  <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase mb-1.5">
+                    {car.specs?.brand}
                   </p>
-                </div>
+                  <h3 className="text-sm font-medium text-white truncate">
+                    {car.title}
+                  </h3>
+                  <p className="text-sm text-[#C9A961] mt-2">
+                    {car.priceDisplay}
+                  </p>
 
-                <div className="hidden sm:block text-right shrink-0">
-                  <p className="text-sm text-white/80 font-light">{car.priceDisplay || '—'}</p>
-                  <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">{car.status}</p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <Link
-                    href={`/admin/cars/${car._id}`}
-                    className="px-4 py-2 text-xs text-white/70 border border-white/10 hover:border-white/40 hover:text-white uppercase tracking-widest transition-colors"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(car._id, car.title)}
-                    disabled={isDeleting}
-                    className="px-4 py-2 text-xs text-white/70 border border-white/10 hover:border-red-500 hover:text-red-400 uppercase tracking-widest transition-colors disabled:opacity-50 min-w-[80px]"
-                  >
-                    {isDeleting ? <span className="animate-pulse">[ .. ]</span> : 'Delete'}
-                  </button>
+                  {/* Actions */}
+                  <div className="flex gap-2 mt-5">
+                    <Link
+                      href={`/admin/cars/${car._id}`}
+                      className="flex-1 text-center py-2.5 text-[10px] text-white/70 border border-white/10 rounded-md hover:border-white/40 hover:text-white uppercase tracking-widest transition-colors"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(car._id, car.title)}
+                      disabled={isDeleting}
+                      className="flex-1 py-2.5 text-[10px] text-white/70 border border-white/10 rounded-md hover:border-red-500/60 hover:text-red-400 uppercase tracking-widest transition-colors disabled:opacity-50"
+                    >
+                      {isDeleting ? '...' : 'Delete'}
+                    </button>
+                  </div>
                 </div>
               </div>
             );

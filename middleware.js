@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// ✅ Simple hash (no external lib)
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -13,13 +12,24 @@ async function hashPassword(password) {
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/admin')) {
+  // ✅ Admin routes (protected)
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin-login')) {
     const authCookie = request.cookies.get('admin_session')?.value;
     const expectedHash = await hashPassword(process.env.ADMIN_PASSWORD || '');
 
     if (!authCookie || authCookie !== expectedHash) {
       const loginUrl = new URL('/admin-login', request.url);
       return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // ✅ Login page — jodi already logged in, /admin e redirect
+  if (pathname === '/admin-login') {
+    const authCookie = request.cookies.get('admin_session')?.value;
+    const expectedHash = await hashPassword(process.env.ADMIN_PASSWORD || '');
+
+    if (authCookie && authCookie === expectedHash) {
+      return NextResponse.redirect(new URL('/admin', request.url));
     }
   }
 

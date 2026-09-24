@@ -44,6 +44,18 @@ export async function POST(request) {
 
 export async function DELETE() {
   const response = NextResponse.json({ success: true });
+  
+  // ✅ Cookie delete — multiple paths e
+  response.cookies.set('admin_session', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  });
+  
+  // ✅ Extra safety — delete method
   response.cookies.delete('admin_session');
+
   return response;
 }
